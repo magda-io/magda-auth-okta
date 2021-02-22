@@ -38,7 +38,9 @@ See chart value file for details of the logic used to generate this setting valu
             "--externalUrl", {{ .Values.global.externalUrl | quote }},
             "--authPluginRedirectUrl", {{ .Values.authPluginRedirectUrl | default .Values.global.authPluginRedirectUrl | quote }},
             "--authApiUrl", "http://authorization-api/v0",
-            "--authPluginConfigJson", "/etc/{{ .Chart.Name }}-config/authPluginConfig.json"
+            "--authPluginConfigJson", "/etc/{{ .Chart.Name }}-config/authPluginConfig.json",
+            "--ClientId", {{ .Values.clientId | quote }},
+            "--issuer", {{ .Values.issuer | quote }},
         ]
         volumeMounts:
           - name: gateway-config
@@ -81,6 +83,11 @@ See chart value file for details of the logic used to generate this setting valu
               name: db-passwords
               key: session-db-client
 {{- end }}
+        - name: CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: oauth-secrets
+              key: okta-client-secret
       # --- load cookie setting from gateway-config
       volumes:
         - name: gateway-config

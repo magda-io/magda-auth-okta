@@ -1,12 +1,12 @@
 import express from "express";
 import path from "path";
 import yargs from "yargs";
-import createAuthPluginRouter from "./createAuthPluginRouter";
 import AuthApiClient, { UserToken } from "@magda/auth-api-client";
 import {
     createMagdaSessionRouter,
     AuthPluginConfig
 } from "@magda/authentication-plugin-sdk";
+import createAuthPluginRouter from "./createAuthPluginRouter";
 
 const coerceJson = (path?: string) => path && require(path);
 
@@ -79,6 +79,24 @@ const argv = yargs
             "The user id to use when making authenticated requests to the registry",
         type: "string",
         default: process.env.USER_ID || process.env.npm_package_config_userId
+    })
+    .option("clientId", {
+        describe: "Okta client Id",
+        type: "string",
+        required: true
+    })
+    .option("clientSecret", {
+        describe: "Okta Client Secret",
+        type: "string",
+        default:
+            process.env.CLIENT_SECRET ||
+            process.env.npm_package_config_clientSecret
+    })
+    .option("issuer", {
+        describe:
+            "The okta issuer URL. e.g. https://{yourOktaDomain}/oauth2/default",
+        type: "string",
+        required: true
     }).argv;
 
 const authPluginConfig = (argv.authPluginConfigJson as any) as AuthPluginConfig;
@@ -141,21 +159,28 @@ const authApiClient = new AuthApiClient(
     argv.userId
 );
 
-app.use(
-    createAuthPluginRouter({
-        passport: passport,
-        authorizationApi: authApiClient,
-        // you might want to update the helm chart to pass clientId & clientSecret provided by your idp (identity provied)
-        clientId: "My clientId",
-        clientSecret: "My clientSecret",
-        externalUrl: argv.externalUrl,
-        authPluginRedirectUrl: argv.authPluginRedirectUrl,
-        authPluginConfig
-    })
-);
+(async () => {
+    try {
+        const routes = await createAuthPluginRouter({
+            passport: passport,
+            authorizationApi: authApiClient,
+            // you might want to update the helm chart to pass clientId & clientSecret provided by your idp (identity provied)
+            clientId: argv.clientId,
+            clientSecret: argv.clientId,
+            issuer: argv.issuer,
+            externalUrl: argv.externalUrl,
+            authPluginRedirectUrl: argv.authPluginRedirectUrl,
+            authPluginConfig
+        });
+        app.use(routes);
 
-app.listen(argv.listenPort);
-console.log("Listening on port " + argv.listenPort);
+        app.listen(argv.listenPort);
+        console.log("Listening on port " + argv.listenPort);
+    } catch (e) {
+        console.error(e);
+        process.exit(-1);
+    }
+})();
 
 process.on(
     "unhandledRejection",
