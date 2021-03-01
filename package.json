@@ -15,7 +15,7 @@
     "test": "mocha --require ts-node/register \"src/test/**/*.spec.ts\"",
     "docker-build-local": "create-docker-context-for-node-component --build --push --tag auto --local",
     "docker-build-prod": "create-docker-context-for-node-component --build --push --tag auto",
-    "helm-lint": "helm lint deploy/magda-auth-template -f deploy/test-deploy.yaml",
+    "helm-lint": "helm lint deploy/magda-auth-okta -f deploy/test-deploy.yaml",
     "helm-docs": "helm-docs -t ./README.md.gotmpl -o ../../README.md",
     "retag-and-push": "retag-and-push"
   },
@@ -44,7 +44,7 @@
   },
   "config": {
     "docker": {
-      "name": "data61/magda-auth-template",
+      "name": "data61/magda-auth-okta",
       "include": "node_modules dist Dockerfile package.json assets"
     },
     "jwtSecret": "squirrel",
