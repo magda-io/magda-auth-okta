@@ -191,7 +191,7 @@ export default async function createAuthPluginRouter(
             res: express.Response,
             next: express.NextFunction
         ) => {
-            passport.authenticate("arcgis", {
+            passport.authenticate(STRATEGY_NAME, {
                 failWithError: true
             })(req, res, next);
         },
