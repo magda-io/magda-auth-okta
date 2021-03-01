@@ -19,6 +19,7 @@ const pkg = require("../package.json");
 const OKTA_DEFAULT_TIMEOUT = 10000;
 const OKTA_DEFAULT_MAX_CLOCK_SKEW = 120;
 const STRATEGY_NAME = "okta-oidc";
+const DEFAULT_SCOPE = "openid profile email";
 
 export interface AuthPluginRouterOptions {
     authorizationApi: ApiClient;
@@ -121,6 +122,7 @@ export default async function createAuthPluginRouter(
         options.authPluginRedirectUrl,
         externalUrl
     );
+    const scope = options.scope ? options.scope : DEFAULT_SCOPE;
 
     if (!clientId) {
         throw new Error("Required client id can't be empty!");
@@ -139,7 +141,7 @@ export default async function createAuthPluginRouter(
     const oidcStrategy = new OpenIdClientStrategy(
         {
             params: {
-                scope: options.scope
+                scope
             },
             client
         },
@@ -174,14 +176,14 @@ export default async function createAuthPluginRouter(
     const router: express.Router = express.Router();
 
     router.get("/", (req, res, next) => {
-        const options: any = {
-            scope: ["profile", "email"],
+        const opts: any = {
+            scope,
             state:
                 typeof req?.query?.redirect === "string" && req.query.redirect
                     ? getAbsoluteUrl(req.query.redirect, externalUrl)
                     : resultRedirectionUrl
         };
-        passport.authenticate(STRATEGY_NAME, options)(req, res, next);
+        passport.authenticate(STRATEGY_NAME, opts)(req, res, next);
     });
 
     router.get(
