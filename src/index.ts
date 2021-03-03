@@ -97,6 +97,20 @@ const argv = yargs
             "The okta issuer URL. e.g. https://{yourOktaDomain}/oauth2/default",
         type: "string",
         required: true
+    })
+    .option("scope", {
+        describe: "Okat openid access token scope. Optional.",
+        type: "string"
+    })
+    .option("timeout", {
+        describe:
+            "Okat openid client HTTP request timeout (in milseconds). Optional.",
+        type: "number"
+    })
+    .option("maxClockSkew", {
+        describe:
+            "Okat openid client clock skew tolerance (in seconds). Optional.",
+        type: "number"
     }).argv;
 
 const authPluginConfig = (argv.authPluginConfigJson as any) as AuthPluginConfig;
@@ -170,7 +184,10 @@ const authApiClient = new AuthApiClient(
             issuer: argv.issuer,
             externalUrl: argv.externalUrl,
             authPluginRedirectUrl: argv.authPluginRedirectUrl,
-            authPluginConfig
+            authPluginConfig,
+            scope: argv?.scope,
+            timeout: argv?.timeout,
+            maxClockSkew: argv?.maxClockSkew
         });
         app.use(routes);
 

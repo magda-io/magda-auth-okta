@@ -40,6 +40,15 @@ See chart value file for details of the logic used to generate this setting valu
             "--authApiUrl", "http://authorization-api/v0",
             "--authPluginConfigJson", "/etc/{{ .Chart.Name }}-config/authPluginConfig.json",
             "--clientId", {{ .Values.clientId | required "clientId is required for `magda-auth-okat` chart." | quote }},
+            {{- if .Values.scope }}
+            "--scope", {{ .Values.scope | quote }},
+            {{- end }}
+            {{- if .Values.timeout }}
+            "--timeout", {{ .Values.timeout | quote }},
+            {{- end }}
+            {{- if .Values.maxClockSkew }}
+            "--maxClockSkew", {{ .Values.maxClockSkew | quote }},
+            {{- end }}
             {{- if .Values.domain }}
             "--issuer", {{ .Values.domain | printf "https://%s/oauth2/default" | quote }}
             {{- else if .Values.issuer }}

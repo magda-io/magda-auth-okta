@@ -153,6 +153,8 @@ export default async function createAuthPluginRouter(
         throw new Error("Required issuer url (options.issuer) can't be empty!");
     }
 
+    console.log("scope settings: ", scope);
+
     const client = await createOpenIdClient(options);
 
     const oidcStrategy = new OpenIdClientStrategy(

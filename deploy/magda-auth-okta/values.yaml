@@ -133,3 +133,14 @@ domain:
 # -- okta issuer url. When okta `domain` is provided, the `issuer` value can be omitted and will be default to "https://{yourOktaDomain}/oauth2/default"
 issuer:
 
+# -- okta openid access token scope. Default to `openid profile email` if not provided.
+# More see: https://developer.okta.com/docs/reference/api/oidc/#scopes
+scope:
+
+# -- Okat openid client HTTP request timeout (in milseconds). 
+# Default to 10000 if not provided.
+timeout:
+
+# -- Okat openid client clock skew tolerance (in seconds).
+# Default to 120 if not provided
+maxClockSkew:
