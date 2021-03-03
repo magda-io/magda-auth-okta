@@ -8,7 +8,32 @@
 
 Requires MAGDA version 0.0.58 or above.
 
-To deploy the authentication plugin with your MAGDA instance, please check [MAGDA Gateway Helm Chart Document](https://github.com/magda-io/magda/blob/master/deploy/helm/internal-charts/gateway/README.md).
+### How to Use
+
+1. Add the auth plugin as a [Helm Chart Dependency](https://helm.sh/docs/helm/helm_dependency/)
+```yaml
+- name: magda-auth-okta
+  version: 1.0.1
+  repository: https://charts.magda.io
+  tags:
+    - all
+    - magda-auth-okta
+```
+
+2. Config the auth plugin with Okta client Id & domain
+```yaml
+magda-auth-okta:
+  domain: dev-xxxxxx.okta.com
+  clientId: "xxxxxxxx"
+```
+
+3. Config Gatway to add the auth plugin to Gateway's plugin list (More details see [here](https://github.com/magda-io/magda/blob/master/deploy/helm/internal-charts/gateway/README.md))
+```yaml
+gateway:
+  authPlugins:
+  - key: okta
+    baseUrl: http://magda-auth-okta
+```
 
 {{ template "chart.maintainersSection" . }}
 
