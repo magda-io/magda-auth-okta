@@ -8,12 +8,6 @@ Requires MAGDA version 0.0.58 or above.
 
 To deploy the authentication plugin with your MAGDA instance, please check [MAGDA Gateway Helm Chart Document](https://github.com/magda-io/magda/blob/master/deploy/helm/internal-charts/gateway/README.md).
 
-**Homepage:** <https://github.com/magda-io/magda-auth-okta>
-
-## Source Code
-
-* <https://github.com/magda-io/magda-auth-okta>
-
 ## Requirements
 
 Kubernetes: `>= 1.14.0-0`
