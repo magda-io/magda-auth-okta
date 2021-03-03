@@ -95,7 +95,10 @@ Kubernetes: `>= 1.14.0-0`
 | global | object | `{"authPluginRedirectUrl":"/sign-in-redirect","externalUrl":"","image":{},"rollingUpdate":{}}` | only for providing appropriate default value for helm lint |
 | image | object | `{}` |  |
 | issuer | string | `nil` | okta issuer url. When okta `domain` is provided, the `issuer` value can be omitted and will be default to "https://{yourOktaDomain}/oauth2/default" |
+| maxClockSkew | string | `nil` | Okat openid client clock skew tolerance (in seconds). Default to 120 if not provided |
 | replicas | int | `1` | no. of initial replicas |
 | resources.limits.cpu | string | `"50m"` |  |
 | resources.requests.cpu | string | `"10m"` |  |
 | resources.requests.memory | string | `"30Mi"` |  |
+| scope | string | `nil` | okta openid access token scope. Default to `openid profile email` if not provided. More see: https://developer.okta.com/docs/reference/api/oidc/#scopes |
+| timeout | string | `nil` | Okat openid client HTTP request timeout (in milseconds).  Default to 10000 if not provided. |
