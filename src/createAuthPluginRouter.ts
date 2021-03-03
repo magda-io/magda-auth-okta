@@ -1,11 +1,12 @@
 import express, { Router } from "express";
-import { Authenticator } from "passport";
+import passport, { Authenticator } from "passport";
 import { default as ApiClient } from "@magda/auth-api-client";
 import {
     AuthPluginConfig,
     getAbsoluteUrl,
     redirectOnSuccess,
-    redirectOnError
+    redirectOnError,
+    createOrGetUserToken
 } from "@magda/authentication-plugin-sdk";
 import OpenIdClient, {
     Issuer,
@@ -79,6 +80,8 @@ function customizeUserAgent(options: OpenIdClient.HttpOptions) {
 }
 
 async function createOpenIdClient(options: AuthPluginRouterOptions) {
+    console.log("Creating OpenId Client...");
+
     const externalUrl = options.externalUrl;
     const loginBaseUrl = `${externalUrl}/auth/login/plugin`;
 
@@ -88,8 +91,15 @@ async function createOpenIdClient(options: AuthPluginRouterOptions) {
         return opts;
     };
 
+    console.log("Fetching Okta Authorization Server OpenId configuration...");
+
     const iss = await Issuer.discover(
         options.issuer + "/.well-known/openid-configuration"
+    );
+
+    console.log(
+        "Okta Authorization Server OpenId configuration:",
+        iss.metadata
     );
 
     const client = new iss.Client({
@@ -97,6 +107,9 @@ async function createOpenIdClient(options: AuthPluginRouterOptions) {
         client_secret: options.clientSecret,
         redirect_uris: [`${loginBaseUrl}/okta/return`]
     });
+
+    console.log("Okta clientId: ", options.clientId);
+
     client[custom.http_options] = (options) => {
         options = customizeUserAgent(options);
         options.timeout = options.timeout || OKTA_DEFAULT_TIMEOUT;
@@ -107,13 +120,17 @@ async function createOpenIdClient(options: AuthPluginRouterOptions) {
             ? OKTA_DEFAULT_MAX_CLOCK_SKEW
             : options.maxClockSkew;
 
+    console.log("Timeout Setting: ", options.timeout || OKTA_DEFAULT_TIMEOUT);
+    console.log("clock_tolerance Setting: ", client[custom.clock_tolerance]);
+    console.log("OpenId Client Created!");
+
     return client;
 }
 
 export default async function createAuthPluginRouter(
     options: AuthPluginRouterOptions
 ): Promise<Router> {
-    //const authorizationApi = options.authorizationApi;
+    const authorizationApi = options.authorizationApi;
     const passport = options.passport;
     const clientId = options.clientId;
     const clientSecret = options.clientSecret;
@@ -145,29 +162,33 @@ export default async function createAuthPluginRouter(
             },
             client
         },
-        (tokenSet: TokenSet, callbackArg1: any, callbackArg2: any) => {
-            let done: (err: any, user?: any) => void;
-            let userinfo: any;
-
-            if (typeof callbackArg2 !== "undefined") {
-                done = callbackArg2;
-                userinfo = callbackArg1;
-            } else {
-                done = callbackArg1;
+        (
+            tokenSet: TokenSet,
+            profile: any,
+            done: (err: any, user?: any) => void
+        ) => {
+            if (!profile?.email) {
+                return done(
+                    new Error(
+                        "Cannot locate email address from the user profile."
+                    )
+                );
             }
 
-            if (tokenSet) {
-                return userinfo
-                    ? done(null, {
-                          userinfo,
-                          tokens: tokenSet
-                      })
-                    : done(null, {
-                          tokens: tokenSet
-                      });
-            } else {
-                return done(null);
-            }
+            const userData: passport.Profile = {
+                id: profile?.sub,
+                provider: "okta",
+                displayName: profile?.name,
+                name: {
+                    familyName: profile?.family_name,
+                    givenName: profile?.given_name
+                },
+                emails: [{ value: profile.email }]
+            };
+
+            createOrGetUserToken(authorizationApi, userData, "okta")
+                .then((userToken) => done(null, userToken))
+                .catch((error) => done(error));
         }
     );
 

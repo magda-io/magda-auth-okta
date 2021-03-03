@@ -166,7 +166,7 @@ const authApiClient = new AuthApiClient(
             authorizationApi: authApiClient,
             // you might want to update the helm chart to pass clientId & clientSecret provided by your idp (identity provied)
             clientId: argv.clientId,
-            clientSecret: argv.clientId,
+            clientSecret: argv.clientSecret,
             issuer: argv.issuer,
             externalUrl: argv.externalUrl,
             authPluginRedirectUrl: argv.authPluginRedirectUrl,
