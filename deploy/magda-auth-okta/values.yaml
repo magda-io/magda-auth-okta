@@ -126,5 +126,10 @@ resources:
 # -- okta clientId
 clientId:
 
-# -- okta issuer url. e.g. https://{yourOktaDomain}/oauth2/default"
+# -- okta domain. Used to generate issuer url (i.e. `https://{yourOktaDomain}/oauth2/default`).
+# You can skip this field and provide value for `issuer` field directly instead.
+domain: 
+
+# -- okta issuer url. When okta `domain` is provided, the `issuer` value can be omitted and will be default to "https://{yourOktaDomain}/oauth2/default"
 issuer:
+

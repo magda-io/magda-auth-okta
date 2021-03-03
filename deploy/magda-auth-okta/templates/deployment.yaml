@@ -39,8 +39,14 @@ See chart value file for details of the logic used to generate this setting valu
             "--authPluginRedirectUrl", {{ .Values.authPluginRedirectUrl | default .Values.global.authPluginRedirectUrl | quote }},
             "--authApiUrl", "http://authorization-api/v0",
             "--authPluginConfigJson", "/etc/{{ .Chart.Name }}-config/authPluginConfig.json",
-            "--clientId", {{ .Values.clientId | required "clientId is required for magda-auth-okta" | quote }},
-            "--issuer", {{ .Values.issuer | required "issuer is required for magda-auth-okta" | quote }}
+            "--clientId", {{ .Values.clientId | required "clientId is required for `magda-auth-okat` chart." | quote }},
+            {{- if .Values.domain }}
+            "--issuer", {{ .Values.domain | printf "https://%s/oauth2/default" | quote }}
+            {{- else if .Values.issuer }}
+            "--issuer", {{ .Values.issuer | quote }}
+            {{- else }}
+            {{- fail "either `domain` or `issuer` is required for `magda-auth-okat` chart." -}}
+            {{- end }}
         ]
         volumeMounts:
           - name: gateway-config

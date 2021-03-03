@@ -1,6 +1,6 @@
 # magda-auth-okta
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square)
+![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square)
 
 A Magda Authentication Plugin for Okta.
 
@@ -91,9 +91,10 @@ Kubernetes: `>= 1.14.0-0`
 | defaultImage.imagePullSecret | bool | `false` |  |
 | defaultImage.pullPolicy | string | `"IfNotPresent"` |  |
 | defaultImage.repository | string | `"docker.io/data61"` |  |
+| domain | string | `nil` | okta domain. Used to generate issuer url (i.e. `https://{yourOktaDomain}/oauth2/default`). You can skip this field and provide value for `issuer` field directly instead. |
 | global | object | `{"authPluginRedirectUrl":"/sign-in-redirect","externalUrl":"","image":{},"rollingUpdate":{}}` | only for providing appropriate default value for helm lint |
 | image | object | `{}` |  |
-| issuer | string | `nil` | okta issuer url. e.g. https://{yourOktaDomain}/oauth2/default" |
+| issuer | string | `nil` | okta issuer url. When okta `domain` is provided, the `issuer` value can be omitted and will be default to "https://{yourOktaDomain}/oauth2/default" |
 | replicas | int | `1` | no. of initial replicas |
 | resources.limits.cpu | string | `"50m"` |  |
 | resources.requests.cpu | string | `"10m"` |  |

@@ -1,6 +1,6 @@
 {
   "name": "magda-auth-okta",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Magda Authentication Plugin for Okta",
   "repository": "https://github.com/magda-io/magda-auth-okta.git",
   "author": "",
