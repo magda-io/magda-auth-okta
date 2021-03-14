@@ -33,6 +33,8 @@ gateway:
     baseUrl: http://magda-auth-okta
 ```
 
+4. Make `oauth-secrets` secret has the correct value for `okta-client-secret` key
+
 ## Requirements
 
 Kubernetes: `>= 1.14.0-0`
