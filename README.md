@@ -33,7 +33,7 @@ gateway:
     baseUrl: http://magda-auth-okta
 ```
 
-4. Make `oauth-secrets` secret has the correct value for `okta-client-secret` key
+4. Make sure `oauth-secrets` secret has the correct value for `okta-client-secret` key
 
 ## Requirements
 
