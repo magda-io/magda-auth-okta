@@ -24,11 +24,6 @@ jobs:
       - run: yarn build
       - run: yarn test
 
-      - name: Setup Helm
-        uses: azure/setup-helm@v1
-        with:
-          version: v3.2.0
-
       - run: yarn helm-lint
 
       - name: Login to GitHub Package Repository
