@@ -83,7 +83,7 @@ async function createOpenIdClient(options: AuthPluginRouterOptions) {
     console.log("Creating OpenId Client...");
 
     const externalUrl = options.externalUrl;
-    const loginBaseUrl = `${externalUrl}/auth/login/plugin`;
+    const loginBaseUrl = getAbsoluteUrl("/auth/login/plugin", externalUrl);
 
     Issuer[custom.http_options] = function (opts) {
         opts = customizeUserAgent(opts);
@@ -105,7 +105,7 @@ async function createOpenIdClient(options: AuthPluginRouterOptions) {
     const client = new iss.Client({
         client_id: options.clientId,
         client_secret: options.clientSecret,
-        redirect_uris: [`${loginBaseUrl}/okta/return`]
+        redirect_uris: [getAbsoluteUrl("/okta/return", loginBaseUrl)]
     });
 
     console.log("Okta clientId: ", options.clientId);
