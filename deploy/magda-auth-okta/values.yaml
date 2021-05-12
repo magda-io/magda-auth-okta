@@ -29,7 +29,7 @@ authPluginRedirectUrl:
 
 authPluginConfig:
   # -- the unique key of the auth plugin. Allowed characters: [a-zA-Z0-9\-]
-  key: "okta-auth-plugin"
+  key: "okta"
   
   # -- the display name of the auth plugin.
   name: "Okta"
