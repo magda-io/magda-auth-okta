@@ -94,7 +94,11 @@ async function createOpenIdClient(options: AuthPluginRouterOptions) {
     console.log("Fetching Okta Authorization Server OpenId configuration...");
 
     const iss = await Issuer.discover(
-        options.issuer + "/.well-known/openid-configuration"
+        options.issuer +
+            (options.issuer.substr(options.issuer.length - 1) === "/"
+                ? ""
+                : "/") +
+            ".well-known/openid-configuration"
     );
 
     console.log(
@@ -149,8 +153,10 @@ export default async function createAuthPluginRouter(
         throw new Error("Required client secret can't be empty!");
     }
 
-    if (!options.issuer) {
-        throw new Error("Required issuer url (options.issuer) can't be empty!");
+    if (!options.issuer || typeof options.issuer !== "string") {
+        throw new Error(
+            "Required issuer url (options.issuer) can't be empty and must be a string!"
+        );
     }
 
     console.log("scope settings: ", scope);

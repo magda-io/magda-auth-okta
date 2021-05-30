@@ -50,7 +50,7 @@ See chart value file for details of the logic used to generate this setting valu
             "--maxClockSkew", {{ .Values.maxClockSkew | quote }},
             {{- end }}
             {{- if .Values.domain }}
-            "--issuer", {{ .Values.domain | printf "https://%s/oauth2/default" | quote }}
+            "--issuer", {{ .Values.domain | printf "https://%s/" | quote }}
             {{- else if .Values.issuer }}
             "--issuer", {{ .Values.issuer | quote }}
             {{- else }}
