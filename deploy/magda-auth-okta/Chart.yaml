@@ -1,7 +1,7 @@
 apiVersion: v2
 name: magda-auth-okta
 description: A Magda Authentication Plugin for Okta.
-version: "1.0.3"
+version: "1.0.4"
 kubeVersion: ">= 1.14.0-0"
 home: "https://github.com/magda-io/magda-auth-okta"
 sources: ["https://github.com/magda-io/magda-auth-okta"]
