@@ -19,6 +19,13 @@ import OpenIdClient, {
 import os from "os";
 const pkg = require("../package.json");
 
+declare module "@magda/authentication-plugin-sdk" {
+    // we do declaration merging here
+    interface AuthPluginConfig {
+        explicitLogout: boolean;
+    }
+}
+
 const OKTA_DEFAULT_TIMEOUT = 10000;
 const OKTA_DEFAULT_MAX_CLOCK_SKEW = 120;
 const STRATEGY_NAME = "okta-oidc";
@@ -210,7 +217,7 @@ export default async function createAuthPluginRouter(
 
             const userData: passport.Profile = {
                 id: profile?.sub,
-                provider: "okta",
+                provider: authPluginConfig.key,
                 displayName: profile?.name,
                 name: {
                     familyName: profile?.family_name,
@@ -223,15 +230,22 @@ export default async function createAuthPluginRouter(
                 const userToken = await createOrGetUserToken(
                     authorizationApi,
                     userData,
-                    "okta"
+                    authPluginConfig.key
                 );
+
+                const authPluginData: any = {
+                    key: authPluginConfig.key,
+                    tokenSet
+                };
+
+                if (authPluginConfig.explicitLogout) {
+                    // when `explicitLogout` = true (default value), set `logoutUrl` so the gateway will forward logout request to authPlugin
+                    authPluginData.logoutUrl = `/auth/plugin/${authPluginConfig.key}/logout`;
+                }
+
                 done(null, {
                     ...userToken,
-                    authPlugin: {
-                        key: authPluginConfig.key,
-                        tokenSet,
-                        logoutUrl: `/auth/plugin/${authPluginConfig.key}/logout`
-                    }
+                    authPlugin: authPluginData
                 });
             } catch (error) {
                 done(error);
@@ -311,7 +325,7 @@ export default async function createAuthPluginRouter(
                     req,
                     options.authPluginRedirectUrl
                 );
-                    
+
                 res.redirect(
                     client.endSessionUrl({
                         id_token_hint: tokenSet,
