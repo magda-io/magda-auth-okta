@@ -187,7 +187,8 @@ const authApiClient = new AuthApiClient(
             authPluginConfig,
             scope: argv?.scope,
             timeout: argv?.timeout,
-            maxClockSkew: argv?.maxClockSkew
+            maxClockSkew: argv?.maxClockSkew,
+            sessionCookieOptions: argv.cookieJson as any
         });
         app.use(routes);
 

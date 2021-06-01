@@ -6,7 +6,9 @@ import {
     getAbsoluteUrl,
     redirectOnSuccess,
     redirectOnError,
-    createOrGetUserToken
+    createOrGetUserToken,
+    destroyMagdaSession,
+    CookieOptions
 } from "@magda/authentication-plugin-sdk";
 import OpenIdClient, {
     Issuer,
@@ -44,6 +46,7 @@ export interface AuthPluginRouterOptions {
      * For a list of scopes and claims, please see [S]cope-dependent claims](https://developer.okta.com/standards/OIDC/index.html#scope-dependent-claims-not-always-returned) for more information.
      */
     scope?: string;
+    sessionCookieOptions: CookieOptions;
 }
 
 /**
@@ -131,6 +134,30 @@ async function createOpenIdClient(options: AuthPluginRouterOptions) {
     return client;
 }
 
+/**
+ * Determine redirect url based on req & authPluginRedirectUrl config.
+ *
+ * @param {express.Request} req
+ * @param {string} authPluginRedirectUrl
+ * @param {string} [externalUrl] optional; If provided, will attempt to convert the url into an absolute url.
+ *  Otherwise, leave as it is.
+ * @return {*}  {string}
+ */
+function determineRedirectUrl(
+    req: express.Request,
+    authPluginRedirectUrl: string,
+    externalUrl?: string
+): string {
+    const resultRedirectionUrl = getAbsoluteUrl(
+        authPluginRedirectUrl,
+        externalUrl
+    );
+
+    return typeof req?.query?.redirect === "string" && req.query.redirect
+        ? getAbsoluteUrl(req.query.redirect, externalUrl)
+        : resultRedirectionUrl;
+}
+
 export default async function createAuthPluginRouter(
     options: AuthPluginRouterOptions
 ): Promise<Router> {
@@ -139,10 +166,8 @@ export default async function createAuthPluginRouter(
     const clientId = options.clientId;
     const clientSecret = options.clientSecret;
     const externalUrl = options.externalUrl;
-    const resultRedirectionUrl = getAbsoluteUrl(
-        options.authPluginRedirectUrl,
-        externalUrl
-    );
+    const sessionCookieOptions = options.sessionCookieOptions;
+    const authPluginConfig = options.authPluginConfig;
     const scope = options.scope ? options.scope : DEFAULT_SCOPE;
 
     if (!clientId) {
@@ -170,7 +195,7 @@ export default async function createAuthPluginRouter(
             },
             client
         },
-        (
+        async (
             tokenSet: TokenSet,
             profile: any,
             done: (err: any, user?: any) => void
@@ -194,9 +219,23 @@ export default async function createAuthPluginRouter(
                 emails: [{ value: profile.email }]
             };
 
-            createOrGetUserToken(authorizationApi, userData, "okta")
-                .then((userToken) => done(null, userToken))
-                .catch((error) => done(error));
+            try {
+                const userToken = await createOrGetUserToken(
+                    authorizationApi,
+                    userData,
+                    "okta"
+                );
+                done(null, {
+                    ...userToken,
+                    authPlugin: {
+                        key: authPluginConfig.key,
+                        tokenSet,
+                        logoutUrl: `/auth/plugin/${authPluginConfig.key}/logout`
+                    }
+                });
+            } catch (error) {
+                done(error);
+            }
         }
     );
 
@@ -207,10 +246,11 @@ export default async function createAuthPluginRouter(
     router.get("/", (req, res, next) => {
         const opts: any = {
             scope,
-            state:
-                typeof req?.query?.redirect === "string" && req.query.redirect
-                    ? getAbsoluteUrl(req.query.redirect, externalUrl)
-                    : resultRedirectionUrl
+            state: determineRedirectUrl(
+                req,
+                options.authPluginRedirectUrl,
+                externalUrl
+            )
         };
         passport.authenticate(STRATEGY_NAME, opts)(req, res, next);
     });
@@ -240,6 +280,71 @@ export default async function createAuthPluginRouter(
             next: express.NextFunction
         ): any => {
             redirectOnError(err, req.query.state as string, req, res);
+        }
+    );
+
+    router.get(
+        "/logout",
+        async (
+            req: express.Request,
+            res: express.Response,
+            next: express.NextFunction
+        ) => {
+            const tokenSet = (req?.user as any)?.authPlugin?.tokenSet;
+            // no matter what, attempt to destroy magda session first
+            // this function is safe to call even when session doesn't exist
+            await destroyMagdaSession(req, res, sessionCookieOptions);
+            if (!tokenSet) {
+                // can't find tokenSet from session
+                // likely already signed off
+                // redirect user agent back
+                res.redirect(
+                    determineRedirectUrl(
+                        req,
+                        options.authPluginRedirectUrl,
+                        externalUrl
+                    )
+                );
+            } else {
+                // notify idP
+                const redirectUrl = determineRedirectUrl(
+                    req,
+                    options.authPluginRedirectUrl
+                );
+                    
+                res.redirect(
+                    client.endSessionUrl({
+                        id_token_hint: tokenSet,
+                        post_logout_redirect_uri: getAbsoluteUrl(
+                            `/auth/plugin/${authPluginConfig.key}/logout/return`,
+                            externalUrl,
+                            {
+                                redirect: redirectUrl
+                            }
+                        )
+                    })
+                );
+            }
+        }
+    );
+
+    router.get(
+        "/logout/return",
+        async (
+            req: express.Request,
+            res: express.Response,
+            next: express.NextFunction
+        ) => {
+            if (req?.user) {
+                await destroyMagdaSession(req, res, sessionCookieOptions);
+            }
+            res.redirect(
+                determineRedirectUrl(
+                    req,
+                    options.authPluginRedirectUrl,
+                    externalUrl
+                )
+            );
         }
     );
 

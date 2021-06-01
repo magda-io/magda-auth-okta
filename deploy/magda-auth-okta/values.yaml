@@ -14,17 +14,6 @@ global:
 # </ul>
 # This field is for overriding the value set by `global.authPluginRedirectUrl`.
 # Unless you want to have a different value only for this auth plugin, you shouldn't set this value.
-authPluginRedirectUrl:
-
-# -- the redirection url after the whole authentication process is completed.
-# Authentication Plugins will use this value as default.
-# The following query paramaters can be used to supply the authentication result:
-# <ul>
-# <li>result: (string) Compulsory. Possible value: "success" or "failure". </li>
-# <li>errorMessage: (string) Optional. Text message to provide more information on the error to the user. </li>
-# </ul>
-# This field is for overriding the value set by `global.authPluginRedirectUrl`.
-# Unless you want to have a different value only for this auth plugin, you shouldn't set this value.
 authPluginRedirectUrl: 
 
 authPluginConfig:
@@ -36,6 +25,9 @@ authPluginConfig:
   
   # -- the display icon URL of the auth plugin.
   iconUrl: "/icon.svg"
+
+  # -- whether explicitly logout okta session when user is logged out from Magda
+  explicitLogout: true
   
   # -- The authentication method of the plugin. Support values are:
   # <ul>
