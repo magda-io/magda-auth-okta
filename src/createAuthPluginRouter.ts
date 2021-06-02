@@ -240,7 +240,7 @@ export default async function createAuthPluginRouter(
 
                 if (authPluginConfig.explicitLogout) {
                     // when `explicitLogout` = true (default value), set `logoutUrl` so the gateway will forward logout request to authPlugin
-                    authPluginData.logoutUrl = `/auth/plugin/${authPluginConfig.key}/logout`;
+                    authPluginData.logoutUrl = `/auth/login/plugin/${authPluginConfig.key}/logout`;
                 }
 
                 done(null, {
@@ -304,11 +304,11 @@ export default async function createAuthPluginRouter(
             res: express.Response,
             next: express.NextFunction
         ) => {
-            const tokenSet = (req?.user as any)?.authPlugin?.tokenSet;
+            const idToken = (req?.user as any)?.authPlugin?.tokenSet?.id_token;
             // no matter what, attempt to destroy magda session first
             // this function is safe to call even when session doesn't exist
             await destroyMagdaSession(req, res, sessionCookieOptions);
-            if (!tokenSet) {
+            if (!idToken) {
                 // can't find tokenSet from session
                 // likely already signed off
                 // redirect user agent back
@@ -328,9 +328,9 @@ export default async function createAuthPluginRouter(
 
                 res.redirect(
                     client.endSessionUrl({
-                        id_token_hint: tokenSet,
+                        id_token_hint: idToken,
                         post_logout_redirect_uri: getAbsoluteUrl(
-                            `/auth/plugin/${authPluginConfig.key}/logout/return`,
+                            `/auth/login/plugin/${authPluginConfig.key}/logout/return`,
                             externalUrl,
                             {
                                 redirect: redirectUrl
