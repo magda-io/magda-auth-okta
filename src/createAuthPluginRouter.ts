@@ -153,16 +153,29 @@ async function createOpenIdClient(options: AuthPluginRouterOptions) {
 function determineRedirectUrl(
     req: express.Request,
     authPluginRedirectUrl: string,
-    externalUrl?: string
+    externalUrl?: string,
+    useState: boolean = false
 ): string {
     const resultRedirectionUrl = getAbsoluteUrl(
         authPluginRedirectUrl,
         externalUrl
     );
 
-    return typeof req?.query?.redirect === "string" && req.query.redirect
-        ? getAbsoluteUrl(req.query.redirect, externalUrl)
-        : resultRedirectionUrl;
+    let redirectUri = resultRedirectionUrl;
+
+    if (
+        !useState &&
+        typeof req?.query?.redirect === "string" &&
+        req.query.redirect
+    ) {
+        redirectUri = getAbsoluteUrl(req.query.redirect, externalUrl);
+    }
+
+    if (useState && typeof req.query?.state === "string" && req.query.state) {
+        redirectUri = getAbsoluteUrl(req.query.state, externalUrl);
+    }
+
+    return redirectUri;
 }
 
 export default async function createAuthPluginRouter(
@@ -329,12 +342,10 @@ export default async function createAuthPluginRouter(
                 res.redirect(
                     client.endSessionUrl({
                         id_token_hint: idToken,
+                        state: redirectUrl,
                         post_logout_redirect_uri: getAbsoluteUrl(
                             `/auth/login/plugin/${authPluginConfig.key}/logout/return`,
-                            externalUrl,
-                            {
-                                redirect: redirectUrl
-                            }
+                            externalUrl
                         )
                     })
                 );
@@ -356,7 +367,8 @@ export default async function createAuthPluginRouter(
                 determineRedirectUrl(
                     req,
                     options.authPluginRedirectUrl,
-                    externalUrl
+                    externalUrl,
+                    true
                 )
             );
         }
