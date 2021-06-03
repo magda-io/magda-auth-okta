@@ -2,15 +2,15 @@
 # yarn lockfile v1
 
 
-"@magda/auth-api-client@^0.0.60-alpha.10":
-  version "0.0.60-alpha.10"
-  resolved "https://registry.yarnpkg.com/@magda/auth-api-client/-/auth-api-client-0.0.60-alpha.10.tgz#fd1d14f6d49ec3fe1acff1ea7ee3cbae58fc81cf"
-  integrity sha512-t9gcDhYbuNjQ8c65rxp0pKVvUYQIj6R0itE5vt7sgtwqwnjQywA7grbbV7Vt6AMopa7S15jBELac03k1xkKTaA==
+"@magda/auth-api-client@^0.0.60-alpha.12":
+  version "0.0.60-alpha.12"
+  resolved "https://registry.yarnpkg.com/@magda/auth-api-client/-/auth-api-client-0.0.60-alpha.12.tgz#1f59d07d02c0c2f644ab714a40d18d07d5c3fc5b"
+  integrity sha512-pqTi/ti9hAaTfe41o5fdl6hAB1MgTYjxxbw52aeA9z8nqSbq7RXcbZUnhU3gHXy/7Z7Sv9R1fQ9sggJiQyluHw==
 
-"@magda/authentication-plugin-sdk@^0.0.60-alpha.10":
-  version "0.0.60-alpha.10"
-  resolved "https://registry.yarnpkg.com/@magda/authentication-plugin-sdk/-/authentication-plugin-sdk-0.0.60-alpha.10.tgz#d0d313208435d044481d8ef2f46fef766843783a"
-  integrity sha512-Lp4aO8n62h9LinBifyR9O1t8rqJbxuL6xmk8x1JUvsEwW8Mil7wAt7mJNbIWOACofzkmkUhh/U7w7fn5N17Bmw==
+"@magda/authentication-plugin-sdk@^0.0.60-alpha.12":
+  version "0.0.60-alpha.12"
+  resolved "https://registry.yarnpkg.com/@magda/authentication-plugin-sdk/-/authentication-plugin-sdk-0.0.60-alpha.12.tgz#f74b9c2031d62d8ddfb1a25e9b00582983ce2c9e"
+  integrity sha512-rc3fogAT2aBoNvT/XEUhLh+YVk3aMO3H3z5gcSDfAu1bkPsHyQzZMN7X8SPfF6BORMC/xtDFvRtg/Oq/PKyTrA==
   dependencies:
     connect-pg-simple "^6.0.1"
     cookie-parser "^1.4.5"
@@ -20,10 +20,10 @@
     pg "^6.4.0"
     urijs "^1.19.4"
 
-"@magda/docker-utils@^0.0.60-alpha.10":
-  version "0.0.60-alpha.10"
-  resolved "https://registry.yarnpkg.com/@magda/docker-utils/-/docker-utils-0.0.60-alpha.10.tgz#fdbcf110218b6fc3e3a25d5a4ab8a1cbf26ef782"
-  integrity sha512-lzEVydsTGyrBU9skkMv2tCaZsQu9W+q3D9X9KQITWZrSK/ctG2Jiyj/JMsk0ufDYrKI92ltnIH9VSUiLX2w7ww==
+"@magda/docker-utils@^0.0.60-alpha.12":
+  version "0.0.60-alpha.12"
+  resolved "https://registry.yarnpkg.com/@magda/docker-utils/-/docker-utils-0.0.60-alpha.12.tgz#66cb07e4ab65104f76909e081bdbfcc1d641c3c9"
+  integrity sha512-qpKDHhX5KunkLwbgfSVOz+x+HIfntYlVwNoy0AdxvwpnVzR2awchBuHUo+s173qdJA+DJSxDFavml/qKjhMkwQ==
   dependencies:
     fs-extra "^2.1.2"
     is-subdir "^1.0.2"
