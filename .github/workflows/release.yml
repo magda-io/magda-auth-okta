@@ -35,6 +35,9 @@ jobs:
       - name: helm-check
         run: yarn helm-lint
 
+      - name: helm-chart-version-check
+        run: yarn check-helm-chart-version deploy/${REPO_NAME}/Chart.yaml
+
       - name: Login to GitHub Package Repository
         env:
           GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
