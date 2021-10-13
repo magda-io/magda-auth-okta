@@ -39,6 +39,10 @@ gateway:
 
 Kubernetes: `>= 1.14.0-0`
 
+| Repository | Name | Version |
+|------------|------|---------|
+| https://charts.magda.io | magda-common | 1.0.0-alpha.4 |
+
 ## Values
 
 | Key | Type | Default | Description |
@@ -68,7 +72,7 @@ Kubernetes: `>= 1.14.0-0`
 | defaultImage.repository | string | `"docker.io/data61"` |  |
 | domain | string | `nil` | okta domain. Used to generate issuer url (i.e. `https://{yourOktaDomain}/oauth2/default`). You can skip this field and provide value for `issuer` field directly instead. |
 | global | object | `{"authPluginRedirectUrl":"/sign-in-redirect","externalUrl":"","image":{},"rollingUpdate":{}}` | only for providing appropriate default value for helm lint |
-| image | object | `{}` |  |
+| image.name | string | `"magda-auth-okta"` |  |
 | issuer | string | `nil` | okta issuer url. When okta `domain` is provided, the `issuer` value can be omitted and will be default to "https://{yourOktaDomain}/oauth2/default" |
 | maxClockSkew | string | `nil` | Okat openid client clock skew tolerance (in seconds). Default to 120 if not provided |
 | replicas | int | `1` | no. of initial replicas |
