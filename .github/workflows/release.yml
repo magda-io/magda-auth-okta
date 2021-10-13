@@ -24,13 +24,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Use Node.js 10
+      - name: Use Node.js 12
         uses: actions/setup-node@v1
         with:
-          node-version: 10
+          node-version: 12
       - run: yarn install
       - run: yarn build
       - run: yarn test
+
+      - name: helm-build-dependencies
+        run: yarn update-all-charts
 
       - name: helm-check
         run: yarn helm-lint
