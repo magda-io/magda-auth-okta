@@ -35,6 +35,11 @@ gateway:
 
 4. Make sure `oauth-secrets` secret has the correct value for `okta-client-secret` key
 
+5. Identity provider setup:
+
+Login return uri: https://[Magda External Access Domain]/auth/login/plugin/okta/return
+Logout return uri: https://[Magda External Access Domain]/auth/login/plugin/okta/logout/return
+
 ## Requirements
 
 Kubernetes: `>= 1.14.0-0`
