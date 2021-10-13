@@ -88,9 +88,8 @@ autoscaler:
   maxReplicas: 3
   targetCPUUtilizationPercentage: 80
 
-image: {}
-  # -- default docker image name 
-  # name: 
+image: 
+  name: "magda-auth-okta"
   # repository: 
   # tag: 
   # pullPolicy: 
