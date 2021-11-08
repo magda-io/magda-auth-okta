@@ -46,7 +46,7 @@ Kubernetes: `>= 1.14.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.magda.io | magda-common | 1.0.0-alpha.4 |
+| https://charts.magda.io | magda-common | 1.0.0 |
 
 ## Values
 

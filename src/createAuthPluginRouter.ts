@@ -95,6 +95,11 @@ async function createOpenIdClient(options: AuthPluginRouterOptions) {
     const externalUrl = options.externalUrl;
     const loginBaseUrl = getAbsoluteUrl("/auth/login/plugin", externalUrl);
 
+    custom.setHttpOptionsDefaults({
+        ...customizeUserAgent({}),
+        timeout: options?.timeout || OKTA_DEFAULT_TIMEOUT
+    });
+
     Issuer[custom.http_options] = function (opts) {
         opts = customizeUserAgent(opts);
         opts.timeout = options?.timeout || OKTA_DEFAULT_TIMEOUT;

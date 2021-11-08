@@ -1,3 +1,8 @@
+# 1.1.1
+
+- make sure timeout setting apply to all HTTP connections
+- Upgrade to magda-common lib chart v1.0.0
+
 # 1.1.0
 
 - Upgrade dependencies
