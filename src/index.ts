@@ -1,16 +1,20 @@
 import express from "express";
+import fs from "fs";
 import path from "path";
 import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 import AuthApiClient, { UserToken } from "@magda/auth-api-client";
 import {
     createMagdaSessionRouter,
     AuthPluginConfig
 } from "@magda/authentication-plugin-sdk";
-import createAuthPluginRouter from "./createAuthPluginRouter";
+import { __dirname } from "@magda/esm-utils";
+import createAuthPluginRouter from "./createAuthPluginRouter.js";
 
-const coerceJson = (path?: string) => path && require(path);
+const coerceJson = (path?: string) =>
+    path ? JSON.parse(fs.readFileSync(path, "utf-8")) : undefined;
 
-const argv = yargs
+const argv = yargs(hideBin(process.argv))
     .config()
     .help()
     .option("listenPort", {
@@ -111,7 +115,7 @@ const argv = yargs
         describe:
             "Okat openid client clock skew tolerance (in seconds). Optional.",
         type: "number"
-    }).argv;
+    }).parseSync();
 
 const authPluginConfig = (argv.authPluginConfigJson as any) as AuthPluginConfig;
 
@@ -127,7 +131,7 @@ app.get("/healthz", (req, res) => res.send("OK"));
  * a 36x36 size icon to be shown on frontend login page
  */
 app.get("/icon.svg", (req, res) =>
-    res.sendFile(path.resolve(__dirname, "../assets/generic-logo.svg"))
+    res.sendFile(path.resolve(__dirname(), "../assets/generic-logo.svg"))
 );
 
 /**

@@ -4,7 +4,18 @@
 
 A Magda Authentication Plugin for Okta.
 
-Requires MAGDA version 0.0.58 or above.
+## Version Compatibility
+
+Pick the chart version that matches your Magda release:
+
+| This chart | Requires Magda | Notes |
+| ---------- | -------------- | ----- |
+| **`v2.x`** (from `v2.0.0-alpha.0`) | **v7.0.0 or above** | Connects to `session-db` over **TLS** when the database enforces SSL. Uses the versioned `magda.db-client-sslmode-env-v1` Helm helper contract plus `magda.db-client-ca-env-v1` for `sslmode: verify-ca`/`verify-full` server-certificate verification (needs `magda-core` `>= 7.0.0-alpha.1`), and runs on **Node.js 22**. |
+| **`v1.x`** | **v6.x or below** (v0.0.58+) | Use this line if you run **Magda v6 or lower**. Does not emit `PGSSLMODE` and will not work against an SSL-enforced external database. |
+
+> ⚠️ **`v2.x` is a breaking change and requires Magda v7+** (on the v7 pre-release line, **`>= 7.0.0-alpha.1`**, which first shipped the `db-client-ca-env-v1` contract this chart now calls). Do **not** deploy `v2.x` alongside Magda v6 or lower, or an earlier v7 alpha — the required helper contracts are only provided by a recent enough `magda-core`, and rendering will fail closed with `no template "magda.compatibility-check" associated` or a contract-not-supported error (this is intentional — the render-time compatibility handshake is controlled by `global.magdaCompatibilityCheck`, default `true`; see the [Magda Helm Helper Contracts](https://github.com/magda-io/magda/blob/next/docs/docs/helm-helper-contracts.md) documentation).
+
+> **Deploy as a chart dependency in the same Helm release as Magda** (not a separate `helm install`), so the `magda.compatibility-check` template resolves.
 
 ### How to Use
 
@@ -46,7 +57,7 @@ Kubernetes: `>= 1.14.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.magda.io | magda-common | 1.0.0 |
+| oci://ghcr.io/magda-io/charts | magda-common | 7.0.0-alpha.1 |
 
 ## Values
 
@@ -74,9 +85,10 @@ Kubernetes: `>= 1.14.0-0`
 | defaultAdminUserId | string | `"00000000-0000-4000-8000-000000000000"` | which system account we used to talk to auth api The value of this field will only be used when `global.defaultAdminUserId` has no value |
 | defaultImage.imagePullSecret | bool | `false` |  |
 | defaultImage.pullPolicy | string | `"IfNotPresent"` |  |
-| defaultImage.repository | string | `"docker.io/data61"` |  |
+| defaultImage.repository | string | `"ghcr.io/magda-io"` |  |
 | domain | string | `nil` | okta domain. Used to generate issuer url (i.e. `https://{yourOktaDomain}/oauth2/default`). You can skip this field and provide value for `issuer` field directly instead. |
-| global | object | `{"authPluginRedirectUrl":"/sign-in-redirect","externalUrl":"","image":{},"rollingUpdate":{}}` | only for providing appropriate default value for helm lint |
+| global | object | `{"authPluginRedirectUrl":"/sign-in-redirect","externalUrl":"","image":{},"magdaCompatibilityCheck":true,"rollingUpdate":{}}` | only for providing appropriate default value for helm lint |
+| global.magdaCompatibilityCheck | bool | `true` | Whether to run the Magda Helm helper-contract compatibility check. Leave as `true` in normal deployments alongside Magda v7+; set to `false` (unquoted) only for a standalone `helm template`/`helm lint` (no magda-core). See https://github.com/magda-io/magda/blob/next/docs/docs/helm-helper-contracts.md |
 | image.name | string | `"magda-auth-okta"` |  |
 | issuer | string | `nil` | okta issuer url. When okta `domain` is provided, the `issuer` value can be omitted and will be default to "https://{yourOktaDomain}/oauth2/default" |
 | maxClockSkew | string | `nil` | Okat openid client clock skew tolerance (in seconds). Default to 120 if not provided |

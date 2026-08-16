@@ -17,7 +17,12 @@ import OpenIdClient, {
     TokenSet
 } from "openid-client";
 import os from "os";
-const pkg = require("../package.json");
+import fs from "fs";
+import { URL } from "url";
+
+const pkg = JSON.parse(
+    fs.readFileSync(new URL("../package.json", import.meta.url), "utf-8")
+);
 
 declare module "@magda/authentication-plugin-sdk" {
     // we do declaration merging here

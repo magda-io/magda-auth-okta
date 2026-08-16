@@ -3,7 +3,10 @@
     "compilerOptions": {
         "outDir": "./dist",
         "strictNullChecks": false,
-        "rootDir": "./src"
+        "rootDir": "./src",
+        "paths": {
+            "openid-client": ["../node_modules/openid-client/types/index.d.ts"]
+        }
     },
     "include": ["./src", "./src/**/*.json"],
     "ts-node": {
