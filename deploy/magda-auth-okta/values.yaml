@@ -3,7 +3,7 @@ global:
   # -- Whether to run the Magda Helm helper-contract compatibility check.
   # Leave as `true` in normal deployments alongside Magda v7+; set to `false`
   # (unquoted) only for a standalone `helm template`/`helm lint` (no magda-core).
-  # See https://github.com/magda-io/magda/blob/next/docs/docs/helm-helper-contracts.md
+  # See https://github.com/magda-io/magda/blob/main/docs/docs/helm-helper-contracts.md
   magdaCompatibilityCheck: true
   image: {}
   rollingUpdate: {}
